@@ -1,13 +1,14 @@
 require('dotenv').config();
 //no distinction between login/registering for the purposes of this project
 const jwt = require('jsonwebtoken');
-const customAPIError = require('../errors/custom-error')
+
+const {BadRequestError} = require('../errors');
 
 const login = async (req, res) => {
 //mongoose validation
     const {username, password} = req.body;
     if(!username || !password) {
-        throw new customAPIError('Please provide login and password', 400)
+        throw new BadRequestError('Please provide login and password')
     }
     try{
     //only for demo as DB is not connected, dummy user id
@@ -24,8 +25,12 @@ const login = async (req, res) => {
 }
 
 const dashboard = async (req, res) => {
-    const luckyNumber = Math.floor(Math.random()*100)
-    res.status(200).json({msg:`Hello, John Doe`, secret: `Here is your authorized data ${luckyNumber}`})
+    //console.log(req.user)
+    const luckyNumber = Math.floor(Math.random() * 100)
+    res.status(200).json({
+        msg: `Hello, ${req.user.username}`,
+        secret: `Here is your authorized data: ${luckyNumber}`
+    })
 }
 
 module.exports = {login, dashboard}
